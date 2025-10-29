@@ -30,9 +30,14 @@ io.on("connection", (socket) => {
 
   socket.on("vote", (choice) => {
     votes[choice]++;
-    io.emit("results", votes);
   });
 
+  // client asks for results when they want to see them
+  socket.on("getResults", () => {
+    socket.emit("results", votes);
+  });
+
+  // only advance when the *first* player who presses next twice does so
   socket.on("next", () => {
     currentQuestion = (currentQuestion + 1) % questions.length;
     votes = { A: 0, B: 0 };
@@ -43,5 +48,3 @@ io.on("connection", (socket) => {
     console.log("Player disconnected");
   });
 });
-
-server.listen(PORT, () => console.log(`Server running on ${PORT}`));
